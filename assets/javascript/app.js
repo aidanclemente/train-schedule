@@ -12,6 +12,7 @@
 
 
 var database = firebase.database();
+var ref = database.ref();
 
 var name;
 var desitnation;
@@ -19,54 +20,87 @@ var firstTrain;
 var frequency;
 
 //Displays the current time - Need to update with Firebase every min
-var currentTime = moment();
+var currentTime = moment(currentTime).format("hh:mm a");
+console.log(currentTime);
 
-$("#currentTime").html("The Current Time is: " + moment(currentTime).format("hh:mm a"));
+$("#currentTime").html("The Current Time is: " + currentTime);
 
 $("#formSubmit").on("click", function() {
-  name = $("#name-input").val().trim();
-  desitnation = $("#destination-input").val().trim();
-  firstTrain = $("#firstTrain-input").val().trim();
-  frequency = $("#frequency-input").val().trim();
 
-  database.ref().push({
-    name: name,
 
-    desitnation: desitnation,
+  if (name == "") {
+    alert("Please enter the name of the train.");
+  } else if (desitnation == "") {
+    alert("Please enter the desitnation of the train.");
+  } else if (firstTrain == "") {
+    alert("Please enter the time the first train arrives.");
+  } else if (frequency == "") {
+    alert("Please enter the frequency the train arrives.");
+  } else {
 
-    firstTrain: firstTrain,
+      name = $("#name-input").val().trim();
+      desitnation = $("#destination-input").val().trim();
+      firstTrain = $("#firstTrain-input").val().trim();
+      frequency = $("#frequency-input").val().trim();
 
-    frequency: frequency,
+      console.log("First train arrives: " + firstTrain);
+      console.log("frequecy: " + frequency);
 
-    dateAdded: firebase.database.ServerValue.TIMESTAMP
-  });
+
+      ref.push({
+        name: name,
+        desitnation: desitnation,
+        firstTrain: firstTrain,
+        frequency: frequency,
+        // dateAdded: firebase.database.ServerValue.TIMESTAMP
+      });
+  }
 
 })  
 
-//Adds commas to numbers
-//Source: https://blog.tompawlak.org/number-currency-formatting-javascript
-function formatNumber (num) {
-  return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")
-}
+ref.on("child_added", function(snapshot) {
 
+  console.log(moment(snapshot.val().firstTrain));
 
-database.ref().on("child_added", function(snapshot) {
+    // First Train: Subtract 1 year to make sure it comes before current time
+  var firstTrainConverted = moment(firstTrain, "hh:mm").subtract(1, "years");
+  console.log(firstTrainConverted);
+  
+  // Time difference between current time and firstTrainConverted
+  var timeDiff = moment().diff(moment(firstTrainConverted), "minutes");
+  console.log("Time Difference: " + timeDiff);
 
+  // Remainder of minutes until next train
+  var minRemainder = timeDiff % frequency;
+  console.log(minRemainder);
 
-  // console.log(moment(snapshot.val().firstTrain).toNow());
-  console.log(moment(snapshot.val().firstTrain).diff(moment(), "minutes"));
+  // Minutes left until next train 
+  var minNextTrain = frequency - minRemainder;
+  console.log("Train arrival in " + minNextTrain + " minutes")
 
-  var convertedTime = moment(snapshot.val().firstTrain).diff(moment(), "minutes");
+  var nextTrainArrival = moment().add(minNextTrain, "minutes");
+  console.log("The next train " + moment(nextTrainArrival).format("hh:mm a"));
 
-  var monthFormat = moment(snapshot.val().firstTrain).format("MM/DD/YYYY");
 
   var newRow = $("<tr>");
 
-  //var newDiv = $("<td>");
-  newRow.append("<td>" + snapshot.val().name + "</td> <td>" + snapshot.val().destination + "</td> <td>" + monthFormat + "</td> <td>" + monthsWorked + "</td> <td>" + "$" + formatNumber(snapshot.val().monthlyRate) + "</td> <td>" + "$" + formatNumber(monthsWorked * snapshot.val().monthlyRate) + "</td>");
+  var newDiv = $("<td>");
+
+  //This is not working correctly
+  newRow.append("<td>" + snapshot.val().name + "</td> <td>" + snapshot.val().destination + "</td> <td>" + snapshot.val().frequency + "</td> <td>" + moment(nextTrainArrival).format("LT") + "</td> <td>" + minNextTrain + "</td>");
 
   $("#userData").append(newRow);
   
-  // $(".row").append(newDiv);
+  $(".row").append(newDiv);
 
 })
+
+
+//++++ Store in Firebase: ++++++++++
+
+//Train Name
+// Desitnation
+//Frequency
+//+++++++++++++++ Need Help here!!! +++++++++++++++++++++++++++
+//Next Arrival Time
+//Minutes Away
