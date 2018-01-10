@@ -30,11 +30,13 @@ $("#formSubmit").on("click", function() {
 
   if ($("#name-input").val() == "") {
     alert("Please enter the name of the train.");
-  } else if (destination == "") {
+  } else if ($("#destination-input").val() == "") {
     alert("Please enter the destination of the train.");
-  } else if (firstTrain == "") {
+  } else if ($("#firstTrain-input").val() == "") {
     alert("Please enter the time the first train arrives.");
-  }  else if (frequency == "") {
+  } else if ($("#firstTrain-input").val().match(/^([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/)) {
+    alert("Please enter a valid military time.");
+  }  else if ($("#frequency-input").val() == "") {
     alert("Please enter the frequency the train arrives.");
   } else {
 
@@ -45,6 +47,7 @@ $("#formSubmit").on("click", function() {
 
       console.log("First train arrives: " + firstTrain);
       console.log("frequecy: " + frequency);
+      console.log("value for first train: ", $("#firstTrain-input").val());
 
       $("#name-input").val("");
       $("#destination-input").val("");
