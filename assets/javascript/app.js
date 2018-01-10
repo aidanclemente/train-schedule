@@ -31,25 +31,21 @@ $("#formSubmit").on("click", function() {
   var destInput = $("#destination-input").val();
   var firstTrn = $("#firstTrain-input").val();
   var frq = $("#frequency-input").val();
+  var regEx = RegExp("^([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$");
 
   if (nameInput == "") {
-
       alert("Please enter the name of the train.");
 
   } else if (destInput == "") {
-
       alert("Please enter the destination of the train.");
 
   } else if (firstTrn == "") {
-
       alert("Please enter the time the first train arrives.");
 
-  } else if (firstTrn.match(!(/^([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/))) {
-
+  } else if (regEx.test(firstTrn) == false) {
       alert("Please enter a valid military time.");
 
   }  else if (frq == "") {
-
       alert("Please enter the frequency the train arrives.");
 
   } else if (firstTrn.match(/^([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/)) {
@@ -82,19 +78,19 @@ ref.on("child_added", function(snapshot) {
 
   console.log("FirstTrain: " + snapshot.val().firstTrain);
 
-    // First Train: Subtract 1 year to make sure it comes before current time
+// First Train: Subtract 1 year to make sure it comes before current time
   var firstTrainConverted = moment(snapshot.val().firstTrain, "hh:mm").subtract(1, "years");
   console.log("Converted: " + firstTrainConverted);
   
-  // Time difference between current time and firstTrainConverted
+// Time difference between current time and firstTrainConverted
   var timeDiff = moment().diff(firstTrainConverted, "minutes");
   console.log("Time Difference: " + timeDiff);
 
-  // Remainder of minutes until next train
+// Remainder of minutes until next train
   var minRemainder = timeDiff % snapshot.val().frequency;
   console.log(minRemainder);
 
-  // Minutes left until next train 
+// Minutes left until next train 
   var minNextTrain = snapshot.val().frequency - minRemainder;
   console.log("Train arrival in " + minNextTrain + " minutes")
 
@@ -103,28 +99,19 @@ ref.on("child_added", function(snapshot) {
 
 
   var newRow = $("<tr>");
-
   var newDiv = $("<td>");
 
+//Adding information to the dynamic table elements
   newRow.append("<td>" + snapshot.val().name + "</td> <td>" + snapshot.val().destination + "</td> <td>" + snapshot.val().frequency + "</td> <td>" + moment(nextTrainArrival).format("LT") + "</td> <td>" + minNextTrain + "</td> <td> <button keyID= '" + snapshot.key + "' class='delete'>" + "Delete" + "</button> </td>");
 
   $("#userData").append(newRow);
-  
   $(".row").append(newDiv);
 
 })
 
+//Event handler for delete buttons
 $(document).on("click", ".delete", function(event) {
   event.preventDefault();
   ref.child($(this).attr("keyID")).remove();
   location.reload();
 })
-
-//++++ Store in Firebase: ++++++++++
-
-//Train Name
-// destination
-//Frequency
-//+++++++++++++++ Need Help here!!! +++++++++++++++++++++++++++
-//Next Arrival Time
-//Minutes Away
