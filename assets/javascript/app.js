@@ -1,4 +1,4 @@
-  // Initialize Firebase
+// Initialize Firebase
   var config = {
     apiKey: "AIzaSyCNJhA9bpX8OAaVBjqUIDT3-FQKujQu2Ys",
     authDomain: "train-time-c096d.firebaseapp.com",
@@ -10,7 +10,6 @@
 
   firebase.initializeApp(config);
 
-
 var database = firebase.database();
 var ref = database.ref();
 
@@ -20,10 +19,11 @@ var firstTrain;
 var frequency;
 
 //Displays the current time - Need to update with Firebase every min
-var currentTime = moment(currentTime).format("hh:mm");
+var currentTime = moment(currentTime).format("hh:mm:ss");
 console.log(currentTime);
 
 $("#currentTime").html("The Current Time is: " + currentTime);
+
 
 $("#formSubmit").on("click", function() {
 
@@ -68,18 +68,31 @@ $("#formSubmit").on("click", function() {
         name: name,
         destination: destination,
         firstTrain: firstTrain,
-        frequency: frequency
+        frequency: frequency,
+        currentTime: currentTime
       });
   }
 
-})  
+});  
+
+//Adding commas to numbers
+//Source: https://blog.tompawlak.org/number-currency-formatting-javascript
+function formatNumber (num) {
+  return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")
+};
 
 ref.on("child_added", function(snapshot) {
 
-  console.log("FirstTrain: " + snapshot.val().firstTrain);
+  var fbName = snapshot.val().name;
+  var fbDest = snapshot.val().destination;
+  var fbFreq = snapshot.val().frequency;
+  var formattedFbFreq = formatNumber(snapshot.val().frequency);
+  var fbTrn = snapshot.val().firstTrain;
+
+  console.log("FirstTrain: " + fbTrn);
 
 // First Train: Subtract 1 year to make sure it comes before current time
-  var firstTrainConverted = moment(snapshot.val().firstTrain, "hh:mm").subtract(1, "years");
+  var firstTrainConverted = moment(fbTrn, "hh:mm").subtract(1, "years");
   console.log("Converted: " + firstTrainConverted);
   
 // Time difference between current time and firstTrainConverted
@@ -87,31 +100,49 @@ ref.on("child_added", function(snapshot) {
   console.log("Time Difference: " + timeDiff);
 
 // Remainder of minutes until next train
-  var minRemainder = timeDiff % snapshot.val().frequency;
+  var minRemainder = timeDiff % fbFreq;
   console.log(minRemainder);
 
 // Minutes left until next train 
-  var minNextTrain = snapshot.val().frequency - minRemainder;
+  var minNextTrain = fbFreq - minRemainder;
   console.log("Train arrival in " + minNextTrain + " minutes")
 
   var nextTrainArrival = moment().add(minNextTrain, "minutes");
-  console.log("The next train " + nextTrainArrival.format("hh:mm a"));
+  var formattedNextTrain =  nextTrainArrival.format("hh:mm a");
+  console.log("The next train " + formattedNextTrain);
 
-
+//Create dynamic elements 
   var newRow = $("<tr>");
   var newDiv = $("<td>");
 
 //Adding information to the dynamic table elements
-  newRow.append("<td>" + snapshot.val().name + "</td> <td>" + snapshot.val().destination + "</td> <td>" + snapshot.val().frequency + "</td> <td>" + moment(nextTrainArrival).format("LT") + "</td> <td>" + minNextTrain + "</td> <td> <button keyID= '" + snapshot.key + "' class='delete'>" + "Delete" + "</button> </td>");
+  newRow.append("<td>" + fbName + "</td> <td>" + fbDest + "</td> <td>" + formattedFbFreq + "</td> <td>" + formattedNextTrain + "</td> <td>" + minNextTrain + "</td> <td> <button keyID= '" + snapshot.key + "' class='delete'>" + "Delete" + "</button> </td>");
 
+//Append to HTML
   $("#userData").append(newRow);
-  $(".row").append(newDiv);
+ // $(".row").append(newDiv);
 
-})
+});
 
 //Event handler for delete buttons
 $(document).on("click", ".delete", function(event) {
   event.preventDefault();
   ref.child($(this).attr("keyID")).remove();
   location.reload();
-})
+});
+
+//Date Time Display
+//Source: https://stackoverflow.com/questions/10590461/dynamic-date-and-time-with-moment-js-and-setinterval
+var datetime = null,
+        date = null;
+
+var update = function () {
+    date = moment(new Date())
+    datetime.html(date.format('dddd, MMMM Do YYYY, h:mm:ss a'));
+};
+
+$(document).ready(function(){
+    datetime = $('#currentTime')
+    update();
+    setInterval(update, 1000);
+});
