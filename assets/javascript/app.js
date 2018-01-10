@@ -27,7 +27,14 @@ $("#currentTime").html("The Current Time is: " + currentTime);
 
 $("#formSubmit").on("click", function() {
 
-    $("#trains")[2].checkValidity();
+  //if ($("#trains")[2].checkValidity()) { console.log('valid');} else { console.log('invalid')};
+    
+var trainsForm = $('#trains');
+if(! trainsForm[2].checkValidity()) {
+  // If the form is invalid, submit it. The form won't actually submit;
+  // this will just cause the browser to display the native HTML5 error messages.
+  trainsForm.find(':submit').click();
+}
 
   if ($("#name-input").val() == "") {
     alert("Please enter the name of the train.");

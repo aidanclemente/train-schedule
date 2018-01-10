@@ -63,7 +63,7 @@ input {
 
 #firstTrain-input:valid {
 	color: green;
-	
+	border-color: black;
 }
 
 #firstTrain-input:invalid {
