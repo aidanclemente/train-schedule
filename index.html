@@ -44,24 +44,45 @@
 	  </div>
 	  <div class="panel-body">
 	    <form id="trains">
-	    	Train Name: 
+	    	
+	    	Train Name: <br>	
+	    	<input 
+		    	type="text" 
+		    	id="name-input" 
+		    	name="name">
 	    	<br>
-	    	<input type="text" id="name-input" name="name">
+
+	    	Destination: <br>	
+	    	<input 
+		    	type="text" 
+		    	id="destination-input" 
+		    	name="destination">
 	    	<br>
-	    	Destination: 
+
+	    	First Train Time (Military Time: HH:MM): <br>
+	    	<input 
+		    	type="text" 
+		    	id="firstTrain-input" 
+		    	name="firstTrain" 
+		    	required="required" 
+		    	title="Military time HH:MM" 
+		    	pattern="/^([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/g">
 	    	<br>
-	    	<input type="text" id="destination-input" name="destination">
-	    	<br>
-	    	First Train Time (Military Time: HH:MM): 
-	    	<br>
-	    	<input type="text" id="firstTrain-input" name="firstTrain" required="required" title="Military time HH:MM" pattern="/^([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/">
-	    	<br>
-	    	Frequency (min): 
-	    	<br>
-	    	<input type="number" id="frequency-input" name="frequency">
-	    	<br>	 		    		    	
+
+	    	Frequency (min): <br>
+	    	<input 
+		    	type="number" 
+		    	id="frequency-input" 
+		    	name="frequency">
+	    	<br>	
+
 	    </form>
-	    <button type="submit" id="formSubmit" class="btn" value="submit">Submit</button>   
+	    <button 
+		    type="submit" 
+		    id="formSubmit" 
+		    class="btn" 
+		    value="submit">Submit
+		</button>   
 	  </div>
 	</div>	
 	<script src="assets/javascript/app.js" type="text/javascript"></script>

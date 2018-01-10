@@ -22,13 +22,6 @@ input {
 	border-radius: 5px;
 }
 
-#firstTrain-input:valid {
-	color: green;
-}
-
-#firstTrain-input:invalid {
-	color: red;
-}
 .panel-default {
 	border: none;
 }
@@ -46,6 +39,18 @@ input {
 
 } 
 
+.delete {
+	border-radius: 5px;
+	border: 1px solid #112977;
+	background-color: #c60303;
+	color: white;
+}
+
+.delete:hover {
+	background-color: #4286f4;
+
+}
+
 #trains {
 	padding: 10px;
 }
@@ -56,3 +61,10 @@ input {
 	margin: 0px 0px 10px 10px;
 }
 
+#firstTrain-input:valid {
+	color: green;
+}
+
+#firstTrain-input:invalid {
+	color: red;
+}
