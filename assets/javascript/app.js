@@ -15,12 +15,12 @@ var database = firebase.database();
 var ref = database.ref();
 
 var name;
-var desitnation;
+var destination;
 var firstTrain;
 var frequency;
 
 //Displays the current time - Need to update with Firebase every min
-var currentTime = moment(currentTime).format("hh:mm a");
+var currentTime = moment(currentTime).format("hh:mm");
 console.log(currentTime);
 
 $("#currentTime").html("The Current Time is: " + currentTime);
@@ -28,31 +28,34 @@ $("#currentTime").html("The Current Time is: " + currentTime);
 $("#formSubmit").on("click", function() {
 
 
-  if (name == "") {
+  if ($("#name-input").val() == "") {
     alert("Please enter the name of the train.");
-  } else if (desitnation == "") {
-    alert("Please enter the desitnation of the train.");
+  } else if (destination == "") {
+    alert("Please enter the destination of the train.");
   } else if (firstTrain == "") {
     alert("Please enter the time the first train arrives.");
-  } else if (frequency == "") {
+  }  else if (frequency == "") {
     alert("Please enter the frequency the train arrives.");
   } else {
 
       name = $("#name-input").val().trim();
-      desitnation = $("#destination-input").val().trim();
+      destination = $("#destination-input").val().trim();
       firstTrain = $("#firstTrain-input").val().trim();
       frequency = $("#frequency-input").val().trim();
 
       console.log("First train arrives: " + firstTrain);
       console.log("frequecy: " + frequency);
 
+      $("#name-input").val("");
+      $("#destination-input").val("");
+      $("#firstTrain-input").val("");
+      $("#frequency-input").val("");
 
       ref.push({
         name: name,
-        desitnation: desitnation,
+        destination: destination,
         firstTrain: firstTrain,
-        frequency: frequency,
-        // dateAdded: firebase.database.ServerValue.TIMESTAMP
+        frequency: frequency
       });
   }
 
@@ -60,34 +63,33 @@ $("#formSubmit").on("click", function() {
 
 ref.on("child_added", function(snapshot) {
 
-  console.log(moment(snapshot.val().firstTrain));
+  console.log("FirstTrain: " + snapshot.val().firstTrain);
 
     // First Train: Subtract 1 year to make sure it comes before current time
-  var firstTrainConverted = moment(firstTrain, "hh:mm").subtract(1, "years");
-  console.log(firstTrainConverted);
+  var firstTrainConverted = moment(snapshot.val().firstTrain, "hh:mm").subtract(1, "years");
+  console.log("Converted: " + firstTrainConverted);
   
   // Time difference between current time and firstTrainConverted
-  var timeDiff = moment().diff(moment(firstTrainConverted), "minutes");
+  var timeDiff = moment().diff(firstTrainConverted, "minutes");
   console.log("Time Difference: " + timeDiff);
 
   // Remainder of minutes until next train
-  var minRemainder = timeDiff % frequency;
+  var minRemainder = timeDiff % snapshot.val().frequency;
   console.log(minRemainder);
 
   // Minutes left until next train 
-  var minNextTrain = frequency - minRemainder;
+  var minNextTrain = snapshot.val().frequency - minRemainder;
   console.log("Train arrival in " + minNextTrain + " minutes")
 
   var nextTrainArrival = moment().add(minNextTrain, "minutes");
-  console.log("The next train " + moment(nextTrainArrival).format("hh:mm a"));
+  console.log("The next train " + nextTrainArrival.format("hh:mm a"));
 
 
   var newRow = $("<tr>");
 
   var newDiv = $("<td>");
 
-  //This is not working correctly
-  newRow.append("<td>" + snapshot.val().name + "</td> <td>" + snapshot.val().destination + "</td> <td>" + snapshot.val().frequency + "</td> <td>" + moment(nextTrainArrival).format("LT") + "</td> <td>" + minNextTrain + "</td>");
+  newRow.append("<td>" + snapshot.val().name + "</td> <td>" + snapshot.val().destination + "</td> <td>" + snapshot.val().frequency + "</td> <td>" + moment(nextTrainArrival).format("LT") + "</td> <td>" + minNextTrain + "</td> <td> <button keyID= '" + snapshot.key + "' class='delete'>" + "Delete" + "</button> </td>");
 
   $("#userData").append(newRow);
   
@@ -95,11 +97,16 @@ ref.on("child_added", function(snapshot) {
 
 })
 
+$(document).on("click", ".delete", function(event) {
+  event.preventDefault();
+  ref.child($(this).attr("keyID")).remove();
+  location.reload();
+})
 
 //++++ Store in Firebase: ++++++++++
 
 //Train Name
-// Desitnation
+// destination
 //Frequency
 //+++++++++++++++ Need Help here!!! +++++++++++++++++++++++++++
 //Next Arrival Time

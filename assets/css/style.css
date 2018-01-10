@@ -22,6 +22,13 @@ input {
 	border-radius: 5px;
 }
 
+#firstTrain-input:valid {
+	color: green;
+}
+
+#firstTrain-input:invalid {
+	color: red;
+}
 .panel-default {
 	border: none;
 }
