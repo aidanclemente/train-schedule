@@ -63,8 +63,10 @@ input {
 
 #firstTrain-input:valid {
 	color: green;
+	
 }
 
 #firstTrain-input:invalid {
 	color: red;
+	border-color: red;
 }

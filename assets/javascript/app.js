@@ -27,6 +27,7 @@ $("#currentTime").html("The Current Time is: " + currentTime);
 
 $("#formSubmit").on("click", function() {
 
+    $("#trains")[2].checkValidity();
 
   if ($("#name-input").val() == "") {
     alert("Please enter the name of the train.");
