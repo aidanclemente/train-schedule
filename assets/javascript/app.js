@@ -27,41 +27,37 @@ $("#currentTime").html("The Current Time is: " + currentTime);
 
 $("#formSubmit").on("click", function() {
 
-  //if ($("#trains")[2].checkValidity()) { console.log('valid');} else { console.log('invalid')};
+  var nameInput = $("#name-input").val();
+  var destInput = $("#destination-input").val();
+  var firstTrn = $("#firstTrain-input").val();
+  var frq = $("#frequency-input").val();
 
-//Source: https://stackoverflow.com/questions/11866910/how-to-force-a-html5-form-validation-without-submitting-it-via-jquery
+  if (nameInput == "") {
 
-//This is giving an error    
-var $trainsForm = $('#trains');
-// console.log("trains: ", $('(#trains[0])[2]'));
-if(! ($trainsForm[0])[2].checkValidity()) {
-  // If the form is invalid, submit it. The form won't actually submit;
-  // this will just cause the browser to display the native HTML5 error messages.
-  $trainsForm.find(':submit').click();
-}
+      alert("Please enter the name of the train.");
 
-  if ($("#name-input").val() == "") {
+  } else if (destInput == "") {
 
-    alert("Please enter the name of the train.");
+      alert("Please enter the destination of the train.");
 
-  } else if ($("#destination-input").val() == "") {
+  } else if (firstTrn == "") {
 
-    alert("Please enter the destination of the train.");
+      alert("Please enter the time the first train arrives.");
 
-  } else if ($("#firstTrain-input").val() == "") {
+  } else if (firstTrn.match(!(/^([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/))) {
 
-    alert("Please enter the time the first train arrives.");
+      alert("Please enter a valid military time.");
 
-  }  else if ($("#frequency-input").val() == "") {
+  }  else if (frq == "") {
 
-    alert("Please enter the frequency the train arrives.");
-    
-  } else if ($("#firstTrain-input").val().match(/^([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/)) {
+      alert("Please enter the frequency the train arrives.");
 
-      name = $("#name-input").val().trim();
-      destination = $("#destination-input").val().trim();
-      firstTrain = $("#firstTrain-input").val().trim();
-      frequency = $("#frequency-input").val().trim();
+  } else if (firstTrn.match(/^([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/)) {
+
+      name = nameInput.trim();
+      destination = destInput.trim();
+      firstTrain = firstTrn.trim();
+      frequency = frq.trim();
 
       console.log("First train arrives: " + firstTrain);
       console.log("frequecy: " + frequency);
