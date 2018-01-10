@@ -29,27 +29,34 @@ $("#formSubmit").on("click", function() {
 
   //if ($("#trains")[2].checkValidity()) { console.log('valid');} else { console.log('invalid')};
 
+//Source: https://stackoverflow.com/questions/11866910/how-to-force-a-html5-form-validation-without-submitting-it-via-jquery
+
 //This is giving an error    
 var $trainsForm = $('#trains');
-if(! $trainsForm[2].checkValidity()) {
+// console.log("trains: ", $('(#trains[0])[2]'));
+if(! ($trainsForm[0])[2].checkValidity()) {
   // If the form is invalid, submit it. The form won't actually submit;
   // this will just cause the browser to display the native HTML5 error messages.
   $trainsForm.find(':submit').click();
 }
 
   if ($("#name-input").val() == "") {
+
     alert("Please enter the name of the train.");
+
   } else if ($("#destination-input").val() == "") {
+
     alert("Please enter the destination of the train.");
+
   } else if ($("#firstTrain-input").val() == "") {
+
     alert("Please enter the time the first train arrives.");
 
-    //Not working properly
-  } else if ($("#firstTrain-input").val().match(! /^([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/)) {
-    alert("Please enter a valid military time.");
   }  else if ($("#frequency-input").val() == "") {
+
     alert("Please enter the frequency the train arrives.");
-  } else {
+    
+  } else if ($("#firstTrain-input").val().match(/^([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/)) {
 
       name = $("#name-input").val().trim();
       destination = $("#destination-input").val().trim();
