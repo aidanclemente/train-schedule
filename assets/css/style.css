@@ -50,6 +50,14 @@ input {
 	background-color: #4286f4;
 
 }
+#notLoggedIn {
+	display: none;
+}
+
+#logInButton {    
+	background-color: #251177;
+    color: white;
+}
 
 #trains {
 	padding: 10px;

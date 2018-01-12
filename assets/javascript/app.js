@@ -10,6 +10,35 @@
 
   firebase.initializeApp(config);
 
+//++++++++++++ Google Login+++++++++
+// var provider = new firebase.auth.GoogleAuthProvider();
+
+// function signIn(){
+//     firebase.auth().signInWithPopup(provider).then(function(result) {
+//     // This gives you a Google Access Token. You can use it to access the Google API.
+//     var token = result.credential.accessToken;
+//     // The signed-in user info.
+//     var user = result.user;
+//     console.log(user.displayName);
+//     // ...
+//   }).catch(function(error) {
+//     // Handle Errors here.
+//     var errorCode = error.code;
+//     var errorMessage = error.message;
+//     // The email of the user's account used.
+//     var email = error.email;
+//     // The firebase.auth.AuthCredential type that was used.
+//     var credential = error.credential;
+//     // ...
+//   });
+// }
+
+// $("#logInButton").on("click", function() {
+//   signIn();
+// });
+
+// +++++++++++++++++++++++++++++++++++++++++
+
 var database = firebase.database();
 var ref = database.ref();
 
@@ -18,19 +47,12 @@ var destination;
 var firstTrain;
 var frequency;
 
-//Displays the current time - Need to update with Firebase every min
-var currentTime = moment(currentTime).format("hh:mm:ss");
-console.log(currentTime);
-
-$("#currentTime").html("The Current Time is: " + currentTime);
-
-
 $("#formSubmit").on("click", function() {
 
-  var nameInput = $("#name-input").val();
-  var destInput = $("#destination-input").val();
-  var firstTrn = $("#firstTrain-input").val();
-  var frq = $("#frequency-input").val();
+  var nameInput = $("#name-input").val().trim();
+  var destInput = $("#destination-input").val().trim();
+  var firstTrn = $("#firstTrain-input").val().trim();
+  var frq = $("#frequency-input").val().trim();
   var regEx = RegExp("^([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$");
 
   if (nameInput == "") {
@@ -50,14 +72,10 @@ $("#formSubmit").on("click", function() {
 
   } else if (firstTrn.match(/^([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/)) {
 
-      name = nameInput.trim();
-      destination = destInput.trim();
-      firstTrain = firstTrn.trim();
-      frequency = frq.trim();
-
-      console.log("First train arrives: " + firstTrain);
-      console.log("frequecy: " + frequency);
-      console.log("value for first train: ", $("#firstTrain-input").val());
+      name = nameInput;
+      destination = destInput;
+      firstTrain = firstTrn;
+      frequency = frq;
 
       $("#name-input").val("");
       $("#destination-input").val("");
@@ -89,38 +107,30 @@ ref.on("child_added", function(snapshot) {
   var formattedFbFreq = formatNumber(snapshot.val().frequency);
   var fbTrn = snapshot.val().firstTrain;
 
-  console.log("FirstTrain: " + fbTrn);
-
 // First Train: Subtract 1 year to make sure it comes before current time
   var firstTrainConverted = moment(fbTrn, "hh:mm").subtract(1, "years");
-  console.log("Converted: " + firstTrainConverted);
   
 // Time difference between current time and firstTrainConverted
   var timeDiff = moment().diff(firstTrainConverted, "minutes");
-  console.log("Time Difference: " + timeDiff);
 
 // Remainder of minutes until next train
   var minRemainder = timeDiff % fbFreq;
-  console.log(minRemainder);
 
 // Minutes left until next train 
   var minNextTrain = fbFreq - minRemainder;
-  console.log("Train arrival in " + minNextTrain + " minutes")
 
   var nextTrainArrival = moment().add(minNextTrain, "minutes");
   var formattedNextTrain =  nextTrainArrival.format("hh:mm a");
-  console.log("The next train " + formattedNextTrain);
 
 //Create dynamic elements 
   var newRow = $("<tr>");
   var newDiv = $("<td>");
 
 //Adding information to the dynamic table elements
-  newRow.append("<td>" + fbName + "</td> <td>" + fbDest + "</td> <td>" + formattedFbFreq + "</td> <td>" + formattedNextTrain + "</td> <td>" + minNextTrain + "</td> <td> <button keyID= '" + snapshot.key + "' class='delete'>" + "Delete" + "</button> </td>");
+  newRow.append("<td>" + fbName + "</td> <td>" + fbDest + "</td> <td>" + formattedFbFreq + "</td> <td>" + formattedNextTrain + "</td> <td>" + formatNumber(minNextTrain) + "</td> <td> <button keyID= '" + snapshot.key + "' class='delete'>" + "Delete" + "</button> </td>");
 
 //Append to HTML
   $("#userData").append(newRow);
- // $(".row").append(newDiv);
 
 });
 
@@ -132,17 +142,17 @@ $(document).on("click", ".delete", function(event) {
 });
 
 //Date Time Display
-//Source: https://stackoverflow.com/questions/10590461/dynamic-date-and-time-with-moment-js-and-setinterval
-var datetime = null,
-        date = null;
+//Slightly altered from Source: https://stackoverflow.com/questions/10590461/dynamic-date-and-time-with-moment-js-and-setinterval
+var datetime = null;
+var date = null;
 
-var update = function () {
+var updateTime = function () {
     date = moment(new Date())
     datetime.html(date.format('dddd, MMMM Do YYYY, h:mm:ss a'));
 };
 
 $(document).ready(function(){
     datetime = $('#currentTime')
-    update();
-    setInterval(update, 1000);
+    updateTime();
+    setInterval(updateTime, 1000);
 });
